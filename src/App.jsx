@@ -1,6 +1,7 @@
 import "./App.css";
 import { useState } from "react";
 
+// Represents a single clickable square in the Tic-Tac-Toe board
 function Square({ value, onSquareClick }) {
   return (
     <button className="square" onClick={onSquareClick}>
@@ -9,9 +10,13 @@ function Square({ value, onSquareClick }) {
   );
 }
 
+// Represents the entire Tic-Tac-Toe board
 function Board({ xIsNext, squares, onPlay }) {
+  // Handles click on a square and determines the next move
   function handleClick(i) {
+    // If the square is already filled or there's a winner, don't proceed
     if (squares[i] || calculateWinner(squares)) return;
+
     const nextSquares = squares.slice();
 
     if (xIsNext) {
@@ -23,6 +28,7 @@ function Board({ xIsNext, squares, onPlay }) {
     onPlay(nextSquares);
   }
 
+  // Determine the game's status
   const winner = calculateWinner(squares);
   let status;
   if (winner) {
@@ -32,8 +38,10 @@ function Board({ xIsNext, squares, onPlay }) {
   }
 
   return (
+    // Rendering rows of squares
     <>
       <div className="status">{status}</div>
+
       <div className="board-row">
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
         <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
@@ -53,23 +61,29 @@ function Board({ xIsNext, squares, onPlay }) {
   );
 }
 
+// The main Tic-Tac-Toe game component
 export default function Game() {
-
+  // History of game states, currentMove tracks current game move
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+
+  // Determine which player's turn is next
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
+  // Update the game's history after a play
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
+  // Navigate to a previous game state
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
   }
 
+  // Generate list of buttons for game history navigation
   const moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
@@ -97,7 +111,9 @@ export default function Game() {
   );
 }
 
+// Determines the winner of the game based on current board state
 function calculateWinner(squares) {
+  // Possible winning combinations
   const lines = [
     // Horizontal
     [0, 1, 2],
@@ -112,6 +128,7 @@ function calculateWinner(squares) {
     [2, 4, 6],
   ];
 
+  // Check each combination to see if there's a winner
   for (const [a, b, c] of lines) {
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c])
       return squares[a];
